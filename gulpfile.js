@@ -1,5 +1,4 @@
 var gulp = require('gulp'),
-    watch = require('gulp-watch'),
     http = require('http'),
     livereload = require('gulp-livereload'),
     embedlr = require('gulp-embedlr'),
