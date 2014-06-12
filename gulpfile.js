@@ -4,17 +4,20 @@ var gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     jade = require('gulp-jade'),
     stylus = require('gulp-stylus'),
+    sourcemaps = require('gulp-sourcemaps'),
     coffee = require('gulp-coffee'),
     wisp = require('gulp-wisp'),
     livereload = require('gulp-livereload'),
     embedlr = require('gulp-embedlr'),
     lr = require('tiny-lr'),
-    ecstatic = require('ecstatic'),
+    express = require('express'),
     reloadServer = lr();
+
+var opt= { minify: false };
 
 gulp.task('clean', function() {
     return gulp.src('public/*')
-           .pipe(clean())
+           .pipe(clean());
 });
 
 gulp.task('assets', function() {
@@ -22,7 +25,8 @@ gulp.task('assets', function() {
            .pipe(gulp.dest('public/assets/'))
            .pipe(livereload(reloadServer));
 });
-gulp.task('jade', function() {
+
+gulp.task('jade',  function() {
     return gulp.src('src/**/*.jade')
            .pipe(plumber())
            .pipe(jade({pretty: true}))
@@ -43,7 +47,9 @@ gulp.task('html', function() {
 gulp.task('scripts_coffee', function() {
     return gulp.src('src/scripts/**/*.coffee')
            .pipe(plumber())
+           .pipe(sourcemaps.init())
            .pipe(coffee({bare: true}))
+           .pipe(sourcemaps.write('../maps'))
            .pipe(gulp.dest('public/js/'))
            .pipe(livereload(reloadServer));
 });
@@ -79,8 +85,9 @@ gulp.task('styles', function() {
 });
 
 gulp.task('serve', function() {
-    http.createServer(ecstatic({ root: __dirname + '/public' }))
-    .listen(9001);
+    var app = express();
+    app.use(express.static('public'));
+    app.listen(9001);
 
     reloadServer.listen(35729);
 });
@@ -88,8 +95,8 @@ gulp.task('serve', function() {
 gulp.task('watch', function() {
     gulp.watch('src/assets/**/*', ['assets']);
     gulp.watch('src/**/*.html', ['html']);
-    gulp.watch('src/scripts/**/*.js', ['scripts']);
-    gulp.watch('src/styles/**/*.css', ['styles']);
+    gulp.watch('src/scripts/**/*.js', ['scripts', 'html']);
+    gulp.watch('src/styles/**/*.css', ['styles', 'html']);
 });
 
 gulp.task('watch_coffee', function() {
