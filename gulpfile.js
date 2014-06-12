@@ -26,7 +26,7 @@ gulp.task('assets', function() {
            .pipe(livereload(reloadServer));
 });
 
-gulp.task('assets', function() {
+gulp.task('vendor', function() {
     return gulp.src('src/vendor/**/*')
            .pipe(gulp.dest('public/vendor/'))
            .pipe(livereload(reloadServer));
